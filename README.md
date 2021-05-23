@@ -110,6 +110,69 @@ Deleted table comes under 3 options :
                                2. Fail Safe - Fail Safe is the table is not within the retention period, but within the fail
                                3. result of cloning - Not in time travel or fail safe, but the new table refers the deleted table as a result of cloning.
                                
+                               
+                               
+Snowflake Staging Area:
+         Staging area is a type of a place where raw files are stored. Its kind of Blob storage.
+ We have 2 types of staging area :
+          1. Internal Staging Area - This includes Snowflake Staging area.
+          2. External Staing Area - This includes AWS S3, Azure, GCP.
+          
+Internal Storage :
+     For Internal Storage - the Snow Internal Storage is needed, and we can use Stage Object to pull the data from Snow Internal storage and then use copy command 
+                            to copy the data into Snowflake.
+                            
+   We have 3 stages objects of storage in Snowflake :
+                  1. User Stage
+                  2. Table Stage
+                  3. Named Stage
+                  
+    User Stage : Only single user can access the files, and the user doesnt have insert access into the tables.
+    Table Stage: Can be accessed by Multiple users but can be loaded into only a single table. Copy into command is used, as file format is not used.
+    Named Stage : This is same as Database Object and all the privileges are given, and this is the most convienient method.
+    
+    
+    Dataloading in Snowflake: We have below steps to follow  in Internal Storage:
+    1. Get the file 
+    2. Use Put command to copy from file to Internal Storage Area
+    3. Define the Internal storage Object, FIle Format object in snowflake as Schemas
+    4. Use the Copy into command to copy the data from Internal Storage to Snowfalke tables.
+    
+    In External Storage :
+    1. In External Storage, we have to copy the data from S3/Azure files into External storage schema
+    2. Then from External storage schema, load into Snowflake tables using copy into command.
+    
+    Create or replace transient database control_db;
+
+create or replace schema external_stages;
+
+create or replace schema internal_stages;
+
+create or replace schema file_formats;
+
+/*defining external storage schema*/
+create or replace stage control_db.external_stages.my_ext_stage url='s3://snowflake067/test/'
+credentials=(aws_key_id='AKIAUIIPVJBMSPABKO' aws_secret_key='bgsdsdmnaksalk');
+
+
+DESC STAGE control_db.external_stages.my_ext_stage
+
+/*defining internal Storage Schema*/
+create or replace stage control_db.internal_stages.my_int_stage
+
+create or replace file format control_db.file_formats.my_csv_format
+type =csv field_delimiter =',' skip_header = 1 null_if =('NULL','null') empty_field_as_null = true compression = gzip;
+
+/*Copy Command*/
+copy into sales
+from @my_ext_stage
+file_format =(FORMAT_NAME ='my_csv_format' error_on_column_count_mismatch= false )
+on_error ='skip_file'
+
+
+    
+                  
+                               
 
 
 
