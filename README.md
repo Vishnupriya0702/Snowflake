@@ -169,6 +169,29 @@ from @my_ext_stage
 file_format =(FORMAT_NAME ='my_csv_format' error_on_column_count_mismatch= false )
 on_error ='skip_file'
 
+Loading Data into Snowflake from external loacl files :
+
+To load only less data - we can use the Webconsole to load the data.
+If we want to load millions of data, then we have to use the SnowSQL CLI to load the data.
+
+Steps of using snowSQL CLI and its scenarios 
+PUT command is used only to copy the data from local file system to internal storage area.
+
+Create a table
+PUT command in SNOWCLI
+Copy into (format. on_error ='Skip Header')
+
+If we are unloading selective column 
+Copy into(
+from(Select t.$1, t.$2, t.$3 from staging area t)
+
+Split command is also used.
+
+Unload data from Snowflake to Local files :
+Get command 
+
+
+
 
     
                   
